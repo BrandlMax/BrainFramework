@@ -332,6 +332,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84be05c1b81c44a8a87fb7548446e249, type: 3}
+--- !u!1 &1527870551 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8488619805770795431, guid: 75dc7aa261d1a4f2180f69e3b2c5cd04,
+    type: 3}
+  m_PrefabInstance: {fileID: 1779079906}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1527870552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1527870551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 848d3d0576aab45b2a85bdf8239b980e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1779079906
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -435,9 +453,10 @@ MonoBehaviour:
   license: 
   clientId: o3LBXxpibBDOqaffQVw85Ei1PKJEpUjDNKCWJUk2
   clientSecret: 
-  Profile: 
+  headsetId: EPOCPLUS-3B9AEBB0
+  Profile: TestV2
   Training: 0
-  Subscribed: 0
+  Stream: 0
 --- !u!114 &1872076978
 MonoBehaviour:
   m_ObjectHideFlags: 0

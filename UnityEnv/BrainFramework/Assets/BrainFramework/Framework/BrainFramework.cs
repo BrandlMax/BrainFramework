@@ -14,16 +14,20 @@ public class BrainFramework : MonoBehaviour
     public string license;
     public string clientId;
     public string clientSecret;
+    public string headsetId = "EPOCPLUS-3B9AXXXX";
+
 
     private WebSocket WS;
 
     [Header("Settings")]
     public string Profile;
     public bool Training;
-    public bool Subscribed;
+    public bool Stream;
 
+    private bool READY = false;
     private bool LoggedIn = false;
     private string TOKEN;
+    private string SESSION;
 
     // Start is called before the first frame update
     void Start()
@@ -36,9 +40,11 @@ public class BrainFramework : MonoBehaviour
         // authorize
         On("AccessGranted", authorize);
 
-        // createSession with Profile
+        // createSession
+        On("Authorized", createSession);
 
-        // subscribe
+        // LoadProfile
+        On("SessionCreated", loadProfile);
     }
 
     // Update is called once per frame
@@ -71,7 +77,8 @@ public class BrainFramework : MonoBehaviour
 
     private void _message(object sender, MessageEventArgs e)
     {
-        Debug.Log("Got Message");
+        Debug.Log(e.Data.ToString());
+
         // HANDLE MESSAGES
         // getUserLogin
         if (!LoggedIn)
@@ -129,6 +136,23 @@ public class BrainFramework : MonoBehaviour
             {
                 Debug.LogError("Warning Code " + msg.result.warning.code + ": " + msg.result.warning.message);
             }
+
+            // createSession
+            if (msg.result.id != null)
+            {
+                SESSION = msg.result.id;
+                Emit("SessionCreated");
+                // activateSession();
+            }
+
+            // loadProfile
+            if (msg.result.action != null)
+            {
+                Debug.Log(msg.result.message + " : " + msg.result.name);
+                // Now Everything is set and done;
+                READY = true;
+                Emit("READY");
+            }
         }
 
 
@@ -180,6 +204,75 @@ public class BrainFramework : MonoBehaviour
         }";
 
         WS.Send(authorizeReq);
+    }
+
+    private void createSession()
+    {
+        string createSessionReq = @"{
+            ""id"": 1, 
+            ""jsonrpc"": ""2.0"", 
+            ""method"": ""createSession"",
+            ""params"": {
+                ""cortexToken"": """ + TOKEN + @""",
+                ""headset"": """ + headsetId + @""",
+                ""status"": ""open""
+            }
+        }";
+
+        WS.Send(createSessionReq);
+    }
+
+    //private void activateSession()
+    //{
+    //    Debug.Log(TOKEN);
+    //    Debug.Log(SESSION);
+
+    //    string activateSessionReq = @"{
+    //        ""id"": 1, 
+    //        ""jsonrpc"": ""2.0"", 
+    //        ""method"": ""updateSession"",
+    //        ""params"": {
+    //            ""cortexToken"": """ + TOKEN + @""",
+    //            ""session"": """ + SESSION + @""",
+    //            ""status"": ""active""
+    //        }
+    //    }";
+
+    //    WS.Send(activateSessionReq);
+    //    Debug.Log("ACTIVATEEEEE!!!");
+    //}
+
+    private void loadProfile()
+    {
+        string loadProfileReq = @"{
+            ""id"": 1, 
+            ""jsonrpc"": ""2.0"", 
+            ""method"": ""setupProfile"",
+            ""params"": {
+                ""cortexToken"": """ + TOKEN + @""",
+                ""headset"": """ + headsetId + @""",
+                ""profile"": """ +  Profile + @""",
+                ""status"": ""load""
+            }
+        }";
+
+        WS.Send(loadProfileReq);
+    }
+
+    private void subscribe()
+    {
+        string createSessionReq = @"{
+            ""id"": 1, 
+            ""jsonrpc"": ""2.0"", 
+            ""method"": ""subscribe"",
+            ""params"": {
+                ""cortexToken"": """ + TOKEN + @""",
+                ""session"": """ + SESSION + @""",
+                ""streams"": ""[""met"",""dev"",""mot"",""fac"",""com"",""sys""]""
+            }
+        }";
+
+        WS.Send(createSessionReq);
     }
 
 

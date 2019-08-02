@@ -42,6 +42,8 @@ public class RESULT_CLASS
     public bool accessGranted;
     public string message;
     public string cortexToken;
+    public string action;
+    public string name;
     public WARNING_CLASS warning;
 }
 
