@@ -44,6 +44,8 @@ public class RESULT_CLASS
     public string cortexToken;
     public string action;
     public string name;
+    public string status;
+    public string[] failure;
     public WARNING_CLASS warning;
 }
 

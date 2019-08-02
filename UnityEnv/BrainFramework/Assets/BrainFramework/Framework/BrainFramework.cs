@@ -8,26 +8,38 @@ using WebSocketSharp;
 
 public class BrainFramework : MonoBehaviour
 {
-
+    // ----- Inspector Menu -----
     [Header("Connection")]
     public string socketUrl = "wss://localhost:6868";
-    public string license;
+
+    [Header("Emotiv")]
     public string clientId;
     public string clientSecret;
     public string headsetId = "EPOCPLUS-3B9AXXXX";
 
-
-    private WebSocket WS;
-
     [Header("Settings")]
     public string Profile;
-    public bool Training;
-    public bool Stream;
 
+
+    // ----- Private Globals -----
+    private WebSocket WS;
     private bool READY = false;
+    private bool STREAM = false;
     private bool LoggedIn = false;
     private string TOKEN;
     private string SESSION;
+    private string TRAINING;
+
+    public class BRAIN_CLASS
+    {
+        public string command = null;
+        public string eyeAction = null;
+        public string upperFaceAction = null;
+        public string lowerFaceAction = null;
+    }
+
+    public BRAIN_CLASS BRAIN = new BRAIN_CLASS();
+
 
     // Start is called before the first frame update
     void Start()
@@ -44,17 +56,32 @@ public class BrainFramework : MonoBehaviour
         On("Authorized", createSession);
 
         // LoadProfile
-        On("SessionCreated", loadProfile);
+        On("SessionCreated", () => {
+            loadProfile("load");
+        });
+
+        // Training
+        this.On("trainingStarted", () =>
+        {
+            Debug.LogWarning($"Training {TRAINING} Started.");
+        });
+
+        this.On("trainingSucceeded", () =>
+        {
+            Debug.LogWarning($"Training {TRAINING} Succeeded.");
+            training(TRAINING, "accept");
+        });
+
+        this.On("trainingCompleted", () =>
+        {
+            Debug.LogWarning($"Training {TRAINING} Completed.");
+            //SaveProfile();
+        });
     }
 
-    // Update is called once per frame
-    void Update()
-    {
 
-    }
+    // ----------- EMOTIV FUNCTIONS ------------
 
-
-    // ----------- EMOTIVE FUNCTIONS ------------
     // WEBSOCKET
     private void Connect()
     {
@@ -77,10 +104,10 @@ public class BrainFramework : MonoBehaviour
 
     private void _message(object sender, MessageEventArgs e)
     {
-        Debug.Log(e.Data.ToString());
+        // Debug.Log(e.Data.ToString());
 
         // HANDLE MESSAGES
-        // getUserLogin
+
         if (!LoggedIn)
         {
             RES_LOG_CLASS FirstMsg = JsonUtility.FromJson<RES_LOG_CLASS>(e.Data.ToString());
@@ -132,10 +159,11 @@ public class BrainFramework : MonoBehaviour
                 Emit("Authorized");
             }
 
-            if (msg.result.warning.message != null)
-            {
-                Debug.LogError("Warning Code " + msg.result.warning.code + ": " + msg.result.warning.message);
-            }
+            // WEIRD ERROR WITH WEBSOCKET?
+            //if (msg.result.warning.message != null)
+            //{
+            //    Debug.LogError("Warning Code " + msg.result.warning.code + ": " + msg.result.warning.message);
+            //}
 
             // createSession
             if (msg.result.id != null)
@@ -146,12 +174,76 @@ public class BrainFramework : MonoBehaviour
             }
 
             // loadProfile
-            if (msg.result.action != null)
+            if (msg.result.action != null && msg.result.name != null)
             {
-                Debug.Log(msg.result.message + " : " + msg.result.name);
-                // Now Everything is set and done;
-                READY = true;
-                Emit("READY");
+                if (msg.result.action == "load")
+                {
+                    Debug.Log(msg.result.message + " : " + msg.result.name);
+                    // Now Everything is set and done;
+                    READY = true;
+                    Emit("READY");
+                }
+                else
+                {
+                    Debug.LogWarning("Profile Saved!");
+                }
+
+            }
+
+            // STREAM
+
+            if (msg.result.failure != null)
+            {
+                Debug.Log("Stream Pending");
+            }
+
+            // Commands
+            if (msg.com != null)
+            {
+                BRAIN.command = msg.com[0].ToString();
+            }
+
+            // FaceActions
+            if (msg.fac != null)
+            {
+                BRAIN.eyeAction = msg.fac[0].ToString();
+                BRAIN.upperFaceAction = msg.fac[1].ToString();
+                BRAIN.lowerFaceAction = msg.fac[3].ToString();
+            }
+
+            // Training
+            if (msg.result.action != null && msg.result.status != null)
+            {
+                if (msg.result.status == "accept")
+                {
+                    Debug.LogWarning(msg.result.message);
+                }
+            }
+            if (msg.sys != null)
+            {
+                switch (msg.sys[1])
+                {
+                    case "MC_Started":
+                        Emit("trainingStarted");
+                        Debug.LogWarning($"Training Started");
+                        break;
+                    case "MC_Succeeded":
+                        Emit("trainingSucceeded");
+                        Debug.LogWarning($"Training Succeeded");
+                        break;
+                    case "MC_Completed":
+                        Emit("trainingCompleted");
+                        Debug.LogWarning($"Training Completed");
+                        break;
+                    default:
+                        Debug.LogWarning($"Emotiv System Message: { msg.sys[1] }");
+                        break;
+                }
+            }
+
+            if (msg.fac != null || msg.com != null)
+            {
+                Emit("STREAM");
             }
         }
 
@@ -160,12 +252,11 @@ public class BrainFramework : MonoBehaviour
 
     private void _close(object sender, CloseEventArgs e)
     {
-        Debug.Log("Webserver Closed");
+        Debug.Log("Webserver Closed:" +  e.Reason);
     }
 
 
     // REQUESTS
-
     private void getUserLogin()
     {
         string getUserLoginReq = @"{
@@ -222,27 +313,7 @@ public class BrainFramework : MonoBehaviour
         WS.Send(createSessionReq);
     }
 
-    //private void activateSession()
-    //{
-    //    Debug.Log(TOKEN);
-    //    Debug.Log(SESSION);
-
-    //    string activateSessionReq = @"{
-    //        ""id"": 1, 
-    //        ""jsonrpc"": ""2.0"", 
-    //        ""method"": ""updateSession"",
-    //        ""params"": {
-    //            ""cortexToken"": """ + TOKEN + @""",
-    //            ""session"": """ + SESSION + @""",
-    //            ""status"": ""active""
-    //        }
-    //    }";
-
-    //    WS.Send(activateSessionReq);
-    //    Debug.Log("ACTIVATEEEEE!!!");
-    //}
-
-    private void loadProfile()
+    private void loadProfile(string action)
     {
         string loadProfileReq = @"{
             ""id"": 1, 
@@ -252,9 +323,11 @@ public class BrainFramework : MonoBehaviour
                 ""cortexToken"": """ + TOKEN + @""",
                 ""headset"": """ + headsetId + @""",
                 ""profile"": """ +  Profile + @""",
-                ""status"": ""load""
+                ""status"": """ + action + @"""
             }
         }";
+
+        // Debug.LogError(action);
 
         WS.Send(loadProfileReq);
     }
@@ -268,11 +341,51 @@ public class BrainFramework : MonoBehaviour
             ""params"": {
                 ""cortexToken"": """ + TOKEN + @""",
                 ""session"": """ + SESSION + @""",
-                ""streams"": ""[""met"",""dev"",""mot"",""fac"",""com"",""sys""]""
+                ""streams"": [""com"",""fac"",""sys""]
             }
         }";
 
         WS.Send(createSessionReq);
+        STREAM = true;
+    }
+
+    private void training(string action, string status)
+    {
+        string createSessionReq = @"{
+            ""id"": 1, 
+            ""jsonrpc"": ""2.0"", 
+            ""method"": ""training"",
+            ""params"": {
+                ""action"": """ + action + @""",
+                ""cortexToken"": """ + TOKEN + @""",
+                ""detection"": ""mentalCommand"",
+                ""session"": """ + SESSION + @""",
+                ""status"": """ + status + @"""
+            }
+        }";
+
+        WS.Send(createSessionReq);
+        STREAM = true;
+    }
+
+    // SHORTCUTS
+    public void StartStream()
+    {
+        if (!STREAM)
+        {
+            subscribe();
+        }
+    }
+
+    public void StartTraining(string action)
+    {
+        TRAINING = action;
+        training(action, "start");
+    }
+
+    public void SaveProfile()
+    {
+        loadProfile("save");
     }
 
 
