@@ -23,6 +23,7 @@ public class BrainFramework : MonoBehaviour
     public bool Subscribed;
 
     private bool LoggedIn = false;
+    private string TOKEN;
 
     // Start is called before the first frame update
     void Start()
@@ -33,7 +34,7 @@ public class BrainFramework : MonoBehaviour
         On("UserLoggedIn", requestAccess);
 
         // authorize
-        // On("AccessGranted", authorize);
+        On("AccessGranted", authorize);
 
         // createSession with Profile
 
@@ -75,14 +76,14 @@ public class BrainFramework : MonoBehaviour
         // getUserLogin
         if (!LoggedIn)
         {
-            RES_LOG_CLASS msg = JsonUtility.FromJson<RES_LOG_CLASS>(e.Data.ToString());
+            RES_LOG_CLASS FirstMsg = JsonUtility.FromJson<RES_LOG_CLASS>(e.Data.ToString());
 
-            Debug.Log(msg.result[0].username);
-            if (msg.result != null)
+            Debug.Log(FirstMsg.result[0].username);
+            if (FirstMsg.result != null)
             {
-                if (msg.result[0].currentOSUsername == msg.result[0].loggedInOSUsername)
+                if (FirstMsg.result[0].currentOSUsername == FirstMsg.result[0].loggedInOSUsername)
                 {
-                    Debug.Log("You are logged in, " + msg.result[0].username + "!");
+                    Debug.Log("You are logged in, " + FirstMsg.result[0].username + "!");
                     LoggedIn = true;
                     Emit("UserLoggedIn");
                 }
@@ -104,20 +105,30 @@ public class BrainFramework : MonoBehaviour
             // requestAccess
             if (msg.result.accessGranted)
             {
-                Debug.Log("Access Granted!");
-            }
-            else
-            {
-                Debug.LogError("You do not granted access right to this application. Please use Emotiv App to proceed.");
-                Debug.LogError("If you have already approved this app via the Emtiv app, restart this application.");
+                if (msg.result.accessGranted)
+                {
+                    Debug.Log("Access Granted!");
+                    Emit("AccessGranted");
+                }
+                else
+                {
+                    Debug.LogError("You do not granted access right to this application. Please use Emotiv App to proceed.");
+                    Debug.LogError("If you have already approved this app via the Emtiv app, restart this application.");
+                }
             }
 
             // authorize
-            //if (msg.result.cortexToken != null)
-            //{
+            if (msg.result.cortexToken != null)
+            {
+                TOKEN = msg.result.cortexToken;
+                Debug.Log("Authorized");
+                Emit("Authorized");
+            }
 
-            //}
-
+            if (msg.result.warning.message != null)
+            {
+                Debug.LogError("Warning Code " + msg.result.warning.code + ": " + msg.result.warning.message);
+            }
         }
 
 
@@ -143,8 +154,6 @@ public class BrainFramework : MonoBehaviour
 
     private void requestAccess()
     {
-        Debug.Log("START REQUEST");
-
         string requestAccessReq = @"{
             ""id"": 1, 
             ""jsonrpc"": ""2.0"", 
@@ -155,14 +164,22 @@ public class BrainFramework : MonoBehaviour
             }
         }";
 
-        Debug.Log(requestAccessReq);
-
         WS.Send(requestAccessReq);
     }
 
     private void authorize()
     {
+        string authorizeReq = @"{
+            ""id"": 1, 
+            ""jsonrpc"": ""2.0"", 
+            ""method"": ""authorize"",
+            ""params"": {
+                ""clientId"": """ + clientId + @""",
+                ""clientSecret"": """ + clientSecret + @"""
+            }
+        }";
 
+        WS.Send(authorizeReq);
     }
 
 

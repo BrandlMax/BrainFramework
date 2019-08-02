@@ -41,5 +41,15 @@ public class RESULT_CLASS
     public string loggedInOSUsername;
     public bool accessGranted;
     public string message;
+    public string cortexToken;
+    public WARNING_CLASS warning;
+}
+
+[System.Serializable]
+public class WARNING_CLASS
+{
+    public string code;
+    public string message;
+    public string licenseUrl;
 }
 
