@@ -2,7 +2,7 @@
 Unity Plugin for the Emotiv EPOC v2 API
 
 ## Setup with Emotiv
-1. Create an App to get cliendId and clientSecret:
+1. Create an App to get clientId and clientSecret:
 https://emotiv.gitbook.io/cortex-api/#create-a-cortex-app
 ![Create](https://raw.githubusercontent.com/BrandlMax/BrainFramework/master/_readme/CreateID.png)
 2. Login and connect your Headset with the EMOTIV App.
