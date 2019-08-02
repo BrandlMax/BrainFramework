@@ -313,7 +313,7 @@ PrefabInstance:
     - target: {fileID: 5280109287679479901, guid: 84be05c1b81c44a8a87fb7548446e249,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5280109287679479901, guid: 84be05c1b81c44a8a87fb7548446e249,
         type: 3}
@@ -382,7 +382,7 @@ PrefabInstance:
     - target: {fileID: 8488619805770795435, guid: 75dc7aa261d1a4f2180f69e3b2c5cd04,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8488619805770795435, guid: 75dc7aa261d1a4f2180f69e3b2c5cd04,
         type: 3}
@@ -401,3 +401,66 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 75dc7aa261d1a4f2180f69e3b2c5cd04, type: 3}
+--- !u!1 &1872076976
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1872076979}
+  - component: {fileID: 1872076978}
+  - component: {fileID: 1872076977}
+  m_Layer: 0
+  m_Name: EPOC
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1872076977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872076976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d45be42e12d614934a52683549c737ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  socketUrl: wss://localhost:6868
+  license: 
+  clientId: o3LBXxpibBDOqaffQVw85Ei1PKJEpUjDNKCWJUk2
+  clientSecret: 
+  Profile: 
+  Training: 0
+  Subscribed: 0
+--- !u!114 &1872076978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872076976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f0435d49088d42c1bd7b7e5f6bdc602, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1872076979
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872076976}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
