@@ -34,4 +34,5 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+!BrainFramework.unitypackage
 .DS_Store
