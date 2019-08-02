@@ -4,14 +4,14 @@ Unity Plugin for the Emotiv EPOC v2 API
 ## Setup with Emotiv
 1. Create an App to get cliendId and clientSecret:
 https://emotiv.gitbook.io/cortex-api/#create-a-cortex-app
-![Inspector](https://raw.githubusercontent.com/BrandlMax/BrainFramework/master/_readme/CreateID.png)
+![Create](https://raw.githubusercontent.com/BrandlMax/BrainFramework/master/_readme/CreateID.png)
 2. Login and connect your Headset with the EMOTIV App.
-![Inspector](https://raw.githubusercontent.com/BrandlMax/BrainFramework/master/_readme/Connect.png)
+![Connect](https://raw.githubusercontent.com/BrandlMax/BrainFramework/master/_readme/Connect.png)
 
 ## Setup in Unity
 1. Install Package (export/BrainFramework.unitypackage) to your Unity Scene
 2. Add Prefab "BrainFramework" to your Scene or use Example Scene
-3. Fill in the settings in the BrainFramework Inspector
+3. Fill in the settings in the BrainFramework Inspector <br />
 ![Inspector](https://raw.githubusercontent.com/BrandlMax/BrainFramework/master/_readme/Inpsector.png)
 4. On the first run you should get a notification inside the EMOTIV App. <br /> Approve your App and restart your Unity script.
 
